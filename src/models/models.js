@@ -1,19 +1,5 @@
 import mongoose from "mongoose";
 
-
-const appointmentValidator = (appointments) => {
-  if (appointments.length === 0) {
-    return true;
-  }
-
-  return appointments.every((appointment) => {
-    return (
-      appointment.hasOwnProperty("time") &&
-      appointment.hasOwnProperty("doctorName")
-    );
-  });
-};
-
 const UserSchema = new mongoose.Schema({
   phone: {
     type: String,
@@ -23,15 +9,17 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  appointments: {
-    type: [
-      {
-        time: String,
-        doctorName: String,
+  appointments: [
+    {
+      doctor: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Doctor',
       },
-    ],
-    validate: [appointmentValidator, "Appointments must have time and doctorName"],
-  },
+      slot: {
+        type: String,
+      },
+    },
+  ],
 });
 
 const DoctorSchema = new mongoose.Schema({
@@ -43,21 +31,33 @@ const DoctorSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  slots: [String],
+  slots: {
+    type: [String],
+  },
 });
 
-// Data format example
+const AppointmentSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  doctor: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Doctor',
+    required: true,
+  },
+  appointmentTime: {
+    type: String,
+    required: true,
+  },
+  notificationTime: {
+    oneDayBefore: String,
+    twoHoursBefore: String,
+  },
+});
 
-// const newUserData = {
-//     phone: '+7 926 578 85 14',
-//     name: 'Василий',
-//   };
-  
-//   const newDoctorData = {
-//     name: 'Анатолий',
-//     spec: 'Терапевт',
-//     slots: ['date_time', 'date_time'],
-//   };
 
 export const Users = mongoose.model('User', UserSchema);
 export const Doctors = mongoose.model('Doctor', DoctorSchema);
+export const Appointments = mongoose.model('Appointment', AppointmentSchema);
