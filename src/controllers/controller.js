@@ -1,3 +1,4 @@
+// Function to generate time slots for a given start and end hour on a given date
 export function generateTimeSlots(startHour, endHour, date) {
   const timeSlots = [];
   const currentDate = getCurrentTimeInUTC3().toISOString();
@@ -13,6 +14,7 @@ export function generateTimeSlots(startHour, endHour, date) {
   return timeSlots;
 }
 
+//  Function to return current time in UTC+3 timezone
 export function getCurrentTimeInUTC3() {
   const now = new Date();
   const utc3Time = new Date(now.getTime() + (3 * 60 * 60 * 1000));
