@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import { UserModel, DoctorModel } from "./models/models.js";
+import router from "./routes/routes.js";
 
 const app = express();
 const PORT = process.env.port || 3000;
@@ -15,6 +16,10 @@ mongoose.connect('mongodb+srv://testing:KAuoRdRk3u5ZLFCe@medapi.iqw3a70.mongodb.
 .catch((error) => {
     console.error('Error connecting to MongoDB:', error.message);
 });
+
+app.use(express.json());
+app.use("/api", routes);
+
 
 app.get('/', (req, res) => {
     res.send('Hello, this is a simple Medical API used to create appointments!');
