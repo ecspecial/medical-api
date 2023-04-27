@@ -1,9 +1,10 @@
 import express from "express";
-import { Users, Doctors } from "../models/models.js";
-import generateTimeSlots from "../services/timestamp.js";
+import { Users, Doctors, Appointments } from "../models/models.js";
+import { generateTimeSlots } from "../controllers/controller.js";
 
 const router = express.Router();
 
+// Route to get all the users from the database
 router.get('/users', async (req, res) => {
   Users.find()
   .then((users) => {
@@ -14,6 +15,7 @@ router.get('/users', async (req, res) => {
   })
 });
 
+// Route to add a new user to the database
 router.post('/users', async (req, res) => {
   try {
     const { phone, name, appointments } = req.body;
@@ -31,6 +33,7 @@ router.post('/users', async (req, res) => {
   }
 });
 
+// Route to get all the doctors from the database
 router.get('/doctors', async (req, res) => {
   Doctors.find()
   .then((doctors) => {
@@ -41,6 +44,7 @@ router.get('/doctors', async (req, res) => {
   })
 });
 
+// Route to add a new doctor to the database
 router.post('/doctors', async (req, res) => {
   try {
     const { name, spec } = req.body;
@@ -50,7 +54,9 @@ router.post('/doctors', async (req, res) => {
       return res.status(400).json({ message: 'Doctor already exists' });
     }
     
-    const slots = generateTimeSlots(9, 17);
+    const currentDate = new Date();
+    const nextThreeDays = new Date(currentDate.getTime() + 2 * 24 * 60 * 60 * 1000);
+    const slots = generateTimeSlots(17, 22, nextThreeDays);
     const newDoctor = new Doctors({ name, spec, slots });
     await newDoctor.save();
     res.status(201).json(newDoctor);
@@ -59,6 +65,30 @@ router.post('/doctors', async (req, res) => {
   }
 });
 
+// Route to update doctor time slots for 3 new days
+router.put('/doctors/:doctorID/updateSlots', async (req, res) => {
+  const doctorId = req.params.doctorID;
+  try {
+    const doctor = await Doctors.findById(doctorId);
+
+    if (!doctor) {
+      return res.status(404).json({ message: 'Doctor not found' });
+    }
+
+    const currentDate = new Date();
+    const nextThreeDays = new Date(currentDate.getTime() + 2 * 24 * 60 * 60 * 1000);
+    const newSlots = generateTimeSlots(17, 22, nextThreeDays);
+
+    doctor.slots = [...newSlots];
+    await doctor.save();
+
+    res.status(200).json({ message: 'Doctor slots updated successfully', doctor });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message || err });
+  }
+})
+
+// Route to add a new appointment to the database
 router.post('/appointments', async (req, res) => {
   const { user_id, doctor_id, slot } = req.body;
 
@@ -81,10 +111,6 @@ router.post('/appointments', async (req, res) => {
       return res.status(400).json({ message: 'Slot not available' });
     }
 
-    // Update the doctor's slots by removing the booked slot
-    doctor.slots = doctor.slots.filter(s => s !== slot);
-    await doctor.save();
-
     // Update the user's appointments with the new appointment information
     user.appointments.push({ doctor: doctor_id, slot });
     await user.save();
@@ -93,7 +119,7 @@ router.post('/appointments', async (req, res) => {
     const oneDayBefore = new Date(appointmentDate.getTime() - (24 * 60 * 60 * 1000)).toISOString();
     const twoHoursBefore = new Date(appointmentDate.getTime() - (2 * 60 * 60 * 1000)).toISOString();
 
-    const newAppointment = new Appointment({
+    const newAppointment = new Appointments({
       user: user_id,
       doctor: doctor_id,
       appointmentTime: slot,
@@ -104,6 +130,11 @@ router.post('/appointments', async (req, res) => {
     });
 
     await newAppointment.save();
+
+    // Update the doctor's slots by removing the booked slot
+    doctor.slots = doctor.slots.filter(s => s !== slot);
+    await doctor.save();
+
     res.status(200).json({ message: 'Appointment booked successfully' });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message || err });
