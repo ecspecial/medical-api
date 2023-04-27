@@ -18,7 +18,7 @@ mongoose.connect('mongodb+srv://testing:KAuoRdRk3u5ZLFCe@medapi.iqw3a70.mongodb.
 });
 
 app.use(express.json());
-app.use("/api", routes);
+app.use("/api", router);
 
 
 app.get('/', (req, res) => {
