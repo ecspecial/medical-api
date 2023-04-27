@@ -1,13 +1,163 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>repl.it</title>
-    <link href="style.css" rel="stylesheet" type="text/css" />
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation</title>
+    <style>
+      table {
+          border-collapse: collapse;
+          width: 100%;
+      }
+
+      th, td {
+          border: 1px solid black;
+          padding: 8px;
+          text-align: left;
+      }
+
+      th {
+          background-color: #f2f2f2;
+      }
+  </style>
   </head>
   <body>
     <h1>Medical_API index page</h1>
+    <table>
+      <tr>
+          <th>Operation</th>
+          <th>Request Method</th>
+          <th>Endpoint</th>
+          <th>Data Body Example</th>
+          <th>Response Example</th>
+      </tr>
+      <tr>
+          <td>1. Post new user</td>
+          <td>POST</td>
+          <td>http://localhost:3000/api/users</td>
+          <td>
+              {
+                  "phone": "+79859988595",
+                  "name": "Ольга"
+              }
+          </td>
+          <td>
+              {
+                  "phone": "+79859988595",
+                  "name": "Ольга",
+                  "appointments": [],
+                  "_id": "644ae141a1cf8323cf0c9989",
+                  "__v": 0
+              }
+          </td>
+      </tr>
+      <tr>
+          <td>2. Post new doctor</td>
+          <td>POST</td>
+          <td>http://localhost:3000/api/doctors</td>
+          <td>
+              {
+                  "name": "Анатолий",
+                  "spec": "хирург"
+              }
+          </td>
+          <td>
+              {
+                  "name": "Анатолий",
+                  "spec": "хирург",
+                  "slots": [
+                      "2023-04-28T17:00:00.000Z",
+                      ...
+                  ],
+                  "_id": "644aa33e42496fd0c5eb9734",
+                  "__v": 0
+              }
+          </td>
+      </tr>
+      <tr>
+          <td>3. Get all users</td>
+          <td>GET</td>
+          <td>http://localhost:3000/api/users</td>
+          <td></td>
+          <td>
+              [
+                  {
+                      "_id": "644a92318580394bee47accf",
+                      "phone": "+79159999595",
+                      "name": "Алексей",
+                      "appointments": [],
+                      "__v": 0
+                  }
+              ]
+          </td>
+      </tr>
+      <tr>
+        <td>4. Get all doctors</td>
+        <td>GET</td>
+        <td>http://localhost:3000/api/doctors</td>
+        <td></td>
+        <td>
+            [
+                {
+                    "_id": "644a9de88580394bee47ad04",
+                    "name": "Евгений",
+                    "spec": "терапевт",
+                    "slots": [
+                        "2023-04-27T11:00:00.000Z",
+                        ...
+                    ],
+                    "__v": 2
+                }
+            ]
+        </td>
+      </tr>
+      <tr>
+        <td>5. Post new doctor appointment</td>
+        <td>POST</td>
+        <td>http://localhost:3000/api/doctors/644aa19906bc7e68c58127ff/updateSlots</td>
+        <td>
+            {
+                "slots": [
+                    "2023-04-28T17:00:00.000Z",
+                    ...
+                ]
+            }
+        </td>
+        <td>
+            {
+                "message": "Doctor slots updated successfully",
+                "doctor": {
+                    "_id": "644aa19906bc7e68c58127ff",
+                    "name": "Максим",
+                    "spec": "офтальмолог",
+                    "slots": [
+                        "2023-04-28T17:00:00.000Z",
+                        ...
+                    ],
+                    "__v": 3
+                }
+            }
+        </td>
+    </tr>
+    <tr>
+      <td>6. Post user appointment</td>
+      <td>POST</td>
+      <td>http://localhost:3000/api/appointments</td>
+      <td>
+          {
+              "user_id" : "644ae12ca1cf8323cf0c9986",
+              "doctor_id" : "644aa19906bc7e68c58127ff",
+             "slot" : "2023-04-29T21:00:00.000Z"
+         }
+     </td>
+      <td>
+          {
+              "message": "Appointment booked successfully"
+          }
+      </td>
+  </tr>
+  </table>
     <script type="module" src="app.js"></script>
   </body>
 </html>
