@@ -59,5 +59,5 @@ const DoctorSchema = new mongoose.Schema({
 //     slots: ['date_time', 'date_time'],
 //   };
 
-export const UserModel = mongoose.model('User', UserSchema);
-export const DoctorModel = mongoose.model('Doctor', DoctorSchema);
+export const Users = mongoose.model('User', UserSchema);
+export const Doctors = mongoose.model('Doctor', DoctorSchema);
