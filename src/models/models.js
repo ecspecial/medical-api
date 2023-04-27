@@ -1,5 +1,19 @@
 import mongoose from "mongoose";
 
+
+const appointmentValidator = (appointments) => {
+  if (appointments.length === 0) {
+    return true;
+  }
+
+  return appointments.every((appointment) => {
+    return (
+      appointment.hasOwnProperty("time") &&
+      appointment.hasOwnProperty("doctorName")
+    );
+  });
+};
+
 const UserSchema = new mongoose.Schema({
   phone: {
     type: String,
@@ -9,18 +23,15 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  appointments: [
-    {
-      time: {
-        type: String,
-        required: true,
+  appointments: {
+    type: [
+      {
+        time: String,
+        doctorName: String,
       },
-      doctorName: {
-        type: String,
-        required: true,
-      },
-    },
-  ],
+    ],
+    validate: [appointmentValidator, "Appointments must have time and doctorName"],
+  },
 });
 
 const DoctorSchema = new mongoose.Schema({
